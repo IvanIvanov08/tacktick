@@ -92,7 +92,7 @@ class Home extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => VideoPlayerScreen()),
+                  MaterialPageRoute(builder: (context) => LentaScreen()),
                 );
               },
             ),
@@ -170,5 +170,78 @@ class _LoginState extends State<Login> {
     var loginFile = File('${dir.path}/login.txt');
     await loginFile
         .writeAsString('${_loginController.text}\n${_passwordController.text}');
+  }
+}
+
+class LentaScreen extends StatelessWidget {
+  List<String> uris = [
+    'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            for (int i = 0; i < uris.length; i++)
+              VideoPlayerScreen(uri: uris[i]),
+          ],
+        ),
+      ),
+
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.black,
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+          Container(
+            height: 100,
+            width: 100,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black),
+              color: Colors.blue,
+            ),
+            child: IconButton(
+              icon: Icon(Icons.home),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Home()),
+                );
+              },
+            ),
+          ),
+          Container(
+            height: 100,
+            width: 100,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black),
+              color: Colors.blue,
+            ),
+            child: IconButton(
+              icon: Icon(Icons.video_collection),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LentaScreen()),
+                );
+              },
+            ),
+          ),
+          Container(
+            height: 100,
+            width: 100,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black),
+              color: Colors.blue,
+            ),
+            child: IconButton(
+              icon: Icon(Icons.monetization_on),
+              onPressed: () {},
+            ),
+          ),
+        ]),
+      ),
+    );
   }
 }
