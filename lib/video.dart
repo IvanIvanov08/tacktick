@@ -43,8 +43,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      alignment: Alignment.center,
       color: Colors.black,
-      height: 800,
+      height: MediaQuery.of(context).size.height,
       child: Column(
         children: <Widget>[
           FutureBuilder(
@@ -62,7 +63,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               }
             },
           ),
-          FloatingActionButton(
+          IconButton(
             onPressed: () {
               setState(() {
                 if (_controller.value.isPlaying) {
@@ -72,9 +73,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                 }
               });
             },
-            child: Icon(
+            icon: Icon(
               _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
             ),
+            alignment: Alignment.center,
+            color: Colors.blue,
+            iconSize: 40,
           ),
         ],
       ),

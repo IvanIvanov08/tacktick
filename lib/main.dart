@@ -181,15 +181,19 @@ class LentaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
             for (int i = 0; i < uris.length; i++)
-              VideoPlayerScreen(uri: uris[i]),
+              Container(
+                alignment: Alignment.center,
+                height: MediaQuery.of(context).size.height,
+                child: VideoPlayerScreen(uri: uris[i]),
+              ),
           ],
         ),
       ),
-
       bottomNavigationBar: BottomAppBar(
         color: Colors.black,
         child:
