@@ -54,15 +54,59 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+
+  String _login = '';
+  String _password = '';
+  bool _isPro = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLoginInfo();
+  }
+
+  Future<void> _loadLoginInfo() async {
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/login.txt');
+
+    if (await file.exists()) {
+      final lines = await file.readAsLines();
+
+      setState(() {
+        _login = lines[0];
+        _password = lines[1];
+        _isPro = lines[2] == 'True';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(),
+      appBar: AppBar(
+        title: Text('TackTick'),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+      ),
+
+      body: Center(
+        child: Column(
+          children: <Widget> [
+            Text("Hello, ${_login} ${_password}. Your are ${(_isPro) ? "PREMIUM user" : "user"}!")
+          ],
+        ),
+      ),
+
       bottomNavigationBar: BottomAppBar(
         color: Colors.black,
         child:
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+        Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
           Container(
             height: 100,
             width: 100,
@@ -169,13 +213,15 @@ class _LoginState extends State<Login> {
     final dir = await getApplicationDocumentsDirectory();
     var loginFile = File('${dir.path}/login.txt');
     await loginFile
-        .writeAsString('${_loginController.text}\n${_passwordController.text}');
+        .writeAsString('${_loginController.text}\n${_passwordController.text}\nNoPlus');
   }
 }
 
 class LentaScreen extends StatelessWidget {
   List<String> uris = [
     'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+    'https://video.wixstatic.com/video/dcaf2d_695a08e986db4fb8b3cc1c76967b9ff3/1080p/mp4/file.mp4',
+    'https://video.wixstatic.com/video/dcaf2d_719f6b8faa19476aa842379e36099d7f/480p/mp4/file.mp4'
   ];
 
   @override
