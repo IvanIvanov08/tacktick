@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tacktick/video.dart';
 import 'dart:io';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(MyApp());
@@ -60,9 +62,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
   String _login = '';
   String _password = '';
+  String _name = "";
   bool _isPro = false;
 
   @override
@@ -81,32 +83,84 @@ class _HomeState extends State<Home> {
       setState(() {
         _login = lines[0];
         _password = lines[1];
-        _isPro = lines[2] == 'True';
+        _name = lines[2];
+        _isPro = lines[3] == 'True';
       });
+    }
+  }
+
+  void Send() async {
+    final video = await ImagePicker().pickVideo(source: ImageSource.gallery);
+    final bytes = await video?.readAsBytes();
+
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse(
+          'https://311ea4bb-6d4a-4082-af4c-d20a29d24cd3-00-1hanzs5gce23m.picard.replit.dev/upload'),
+    );
+
+    request.files.add(http.MultipartFile.fromBytes('video', bytes as List<int>,
+        filename: 'video.mp4'));
+
+    var response = await request.send();
+  }
+
+  _pickVideo() async {
+    final video = await ImagePicker().pickVideo(source: ImageSource.gallery);
+
+    if (video != null) {
+      final directory = await getApplicationDocumentsDirectory();
+      final name = video.path.split('/').last;
+      final filePath = '${directory.path}/$name';
+      File(video.path).copy(filePath);
+      Send();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('TackTick'),
-        centerTitle: true,
-        backgroundColor: Colors.blue,
-      ),
-
       body: Center(
+          child: SingleChildScrollView(
         child: Column(
-          children: <Widget> [
-            Text("Hello, ${_login} ${_password}. Your are ${(_isPro) ? "PREMIUM user" : "user"}!")
+          children: <Widget>[
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.blue,
+              ),
+              height: 300,
+              width: 300,
+              alignment: Alignment.center,
+              margin: EdgeInsets.only(top: 50),
+              child: Text(
+                '${_name}',
+                style: TextStyle(
+                  fontSize: 40,
+                ),
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              height: 100,
+              width: 300,
+              margin: EdgeInsets.only(top: 100),
+              child: TextButton(
+                  child: Text('Upload video',
+                      style: TextStyle(color: Colors.black, fontSize: 25)),
+                  onPressed: () {
+                    _pickVideo();
+                  }),
+            ),
           ],
         ),
-      ),
-
+      )),
       bottomNavigationBar: BottomAppBar(
         color: Colors.black,
         child:
-        Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
           Container(
             height: 100,
             width: 100,
@@ -167,6 +221,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _loginController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -195,6 +250,14 @@ class _LoginState extends State<Login> {
                   helperText: 'Enter your password',
                   border: OutlineInputBorder()),
             ),
+            SizedBox(height: 16),
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                  hintText: 'Name',
+                  helperText: 'Enter your name',
+                  border: OutlineInputBorder()),
+            ),
             SizedBox(height: 32),
             ElevatedButton(
                 onPressed: () {
@@ -212,8 +275,8 @@ class _LoginState extends State<Login> {
   void saveLogin() async {
     final dir = await getApplicationDocumentsDirectory();
     var loginFile = File('${dir.path}/login.txt');
-    await loginFile
-        .writeAsString('${_loginController.text}\n${_passwordController.text}\nNoPlus');
+    await loginFile.writeAsString(
+        '${_loginController.text}\n${_passwordController.text}\n${_nameController.text}\nFalse');
   }
 }
 
